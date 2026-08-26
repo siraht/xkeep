@@ -30,6 +30,7 @@ EOF
 chmod 700 "$HERMES_SCRIPT"
 
 # Hermes evaluates cron expressions in its configured IANA timezone.
+PREVIOUS_TIMEZONE="$(hermes config get timezone 2>/dev/null || true)"
 hermes config set timezone America/Denver >/dev/null
 
 EXISTING_JOB="$(python3 - "$JOBS_FILE" "$JOB_NAME" <<'PY'
@@ -79,10 +80,21 @@ PY
 )"
 fi
 
-# The Hermes gateway caches timezone configuration; restart it so the job's
-# first calculated fire and every later DST transition use America/Denver.
-if systemctl is-active --quiet hermes-gateway.service; then
-  systemctl restart hermes-gateway.service
+# The Hermes gateway caches timezone configuration. Its system service runs
+# the agent as this user, so a direct TERM lets systemd's Restart= policy
+# refresh it without requiring an interactive root authorization.
+if [[ "$PREVIOUS_TIMEZONE" != "America/Denver" ]] && systemctl is-active --quiet hermes-gateway.service; then
+  GATEWAY_PID="$(systemctl show hermes-gateway.service -p MainPID --value)"
+  if [[ "$GATEWAY_PID" =~ ^[1-9][0-9]*$ ]]; then
+    kill -TERM "$GATEWAY_PID"
+    for _ in {1..30}; do
+      NEW_PID="$(systemctl show hermes-gateway.service -p MainPID --value)"
+      if systemctl is-active --quiet hermes-gateway.service && [[ "$NEW_PID" != "$GATEWAY_PID" && "$NEW_PID" != "0" ]]; then
+        break
+      fi
+      sleep 1
+    done
+  fi
 fi
 
 # Prevent duplicate briefs from the legacy scheduler while preserving its

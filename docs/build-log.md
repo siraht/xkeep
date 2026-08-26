@@ -22,6 +22,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Installed and manually exercised the systemd user service. It exited successfully, produced a second real briefing, and left the timer enabled and waiting for the next America/Denver schedule.
 - Migrated scheduling ownership to one native Hermes cron job with Telegram delivery and a resumed `xkeep-brief` session; retained the systemd installer only as an explicit fallback.
 - Narrowed runtime installation to the files each runner actually needs after a stale copied `.git` directory blocked an update.
+- Made Hermes timezone refresh work with its root-managed service by restarting the user-owned gateway process only when the configured timezone changes.
 
 ### Decisions
 
