@@ -1,0 +1,30 @@
+{
+  "forYouCount": 200,
+  "followingCount": 100,
+  "includeFollowing": true,
+  "retentionDays": 30,
+  "archiveDays": 14,
+  "pendingReuseHours": 24,
+  "commandTimeoutSeconds": 180,
+  "xCli": null,
+  "briefingProfile": {
+    "mission": "Keep me current on consequential AI developments without making me browse X.",
+    "prioritize": [
+      "model releases, pricing, quotas, access, and capability changes",
+      "coding agents, harnesses, computer use, orchestration, memory, evaluations, and reliability",
+      "open-source repositories, reproducible demos, implementation details, and developer tools",
+      "benchmarks with enough methodology to judge",
+      "inference, training, hardware, local AI, APIs, and infrastructure",
+      "security, policy, and platform changes with practical consequences"
+    ],
+    "deprioritize": [
+      "memes, personality drama, engagement bait, vague predictions, recycled takes, and affiliate promotion",
+      "launch repetition with no new facts and demos with no inspectable evidence"
+    ],
+    "mustKnowMax": 7,
+    "worthSkimmingMax": 8,
+    "watchlistMax": 3,
+    "targetReadingMinutes": 8,
+    "verifyTopClaimsWhenToolsPermit": true
+  }
+}
