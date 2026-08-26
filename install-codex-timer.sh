@@ -10,9 +10,10 @@ if ! command -v codex >/dev/null 2>&1; then
   exit 1
 fi
 
-rm -rf "$DEST"
-mkdir -p "$(dirname "$DEST")" "$UNIT_DIR"
-cp -a "$SOURCE" "$DEST"
+install -d -m 755 "$DEST/scripts" "$UNIT_DIR"
+install -m 700 "$SOURCE/run-codex.sh" "$DEST/run-codex.sh"
+install -m 755 "$SOURCE/scripts/x_feed.py" "$DEST/scripts/x_feed.py"
+install -m 644 "$SOURCE/config.example.json" "$DEST/config.example.json"
 
 cat > "$UNIT_DIR/x-ai-brief.service" <<EOF
 [Unit]

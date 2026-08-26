@@ -10,8 +10,11 @@ if ! command -v hermes >/dev/null 2>&1; then
   exit 1
 fi
 
-mkdir -p "$DEST" "$UNIT_DIR"
-cp -a "$SOURCE/." "$DEST/"
+install -d -m 755 "$DEST/scripts" "$UNIT_DIR"
+install -m 700 "$SOURCE/run-hermes.sh" "$DEST/run-hermes.sh"
+install -m 755 "$SOURCE/scripts/x_feed.py" "$DEST/scripts/x_feed.py"
+install -m 600 "$SOURCE/interests.md" "$DEST/interests.md"
+install -m 644 "$SOURCE/config.example.json" "$DEST/config.example.json"
 
 cat >"$UNIT_DIR/x-ai-brief.service" <<'EOF'
 [Unit]
