@@ -1,15 +1,6 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
-if [[ "$1" == "sessions" ]]; then
-  if [[ "$2" == "export" ]]; then
-    exit 0
-  elif [[ "$2" == "rename" ]]; then
-    [[ "$3" == "test-session" && "$4" == "xkeep-brief" ]]
-    exit 0
-  fi
-fi
-
 [[ "$1" == "chat" ]]
 shift
 QUERY_FILE=""
@@ -36,4 +27,3 @@ Agent runtime v2 was released. https://x.com/dev/status/2
 
 Coverage: reviewed 3 unseen items from 2 For You and 2 Following results. Selected 1 story.
 EOF
-printf '\nsession_id: test-session\n' >&2

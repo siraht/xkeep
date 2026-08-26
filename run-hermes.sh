@@ -6,8 +6,6 @@ COLLECTOR="$ROOT/scripts/x_feed.py"
 INTERESTS_FILE="${XKEEP_INTERESTS_FILE:-$ROOT/interests.md}"
 OUTPUT_DIR="${X_AI_BRIEF_OUTPUT_DIR:-$HOME/Documents/X AI Briefs}"
 HERMES_SESSION="${XKEEP_HERMES_SESSION:-xkeep-brief}"
-PREVIOUS_SESSION_ID=""
-PREVIOUS_SESSION_RENAMED=0
 mkdir -p "$OUTPUT_DIR"
 
 if ! command -v hermes >/dev/null 2>&1; then
@@ -18,14 +16,7 @@ fi
 SNAPSHOT="$(mktemp)"
 QUERY="$(mktemp)"
 FINAL_TMP="$(mktemp)"
-SESSION_INFO="$(mktemp)"
-cleanup() {
-  if [[ "$PREVIOUS_SESSION_RENAMED" == "1" ]]; then
-    hermes sessions rename "$PREVIOUS_SESSION_ID" "$HERMES_SESSION" >/dev/null 2>&1 || true
-  fi
-  rm -f "$SNAPSHOT" "$QUERY" "$FINAL_TMP" "$SESSION_INFO"
-}
-trap cleanup EXIT
+trap 'rm -f "$SNAPSHOT" "$QUERY" "$FINAL_TMP"' EXIT
 
 python3 "$COLLECTOR" prepare >"$SNAPSHOT"
 RUN_ID="$(python3 -c 'import json,sys; print(json.load(open(sys.argv[1]))["runId"])' "$SNAPSHOT")"
@@ -79,39 +70,20 @@ EOF
 EOF
   } >"$QUERY"
 
-  PREVIOUS_SESSION_ID="$(
-    hermes sessions export - --format jsonl --title "$HERMES_SESSION" |
-      python3 -c 'import json,sys; rows=(json.loads(line) for line in sys.stdin if line.strip()); exact=[r for r in rows if r.get("title")==sys.argv[1]]; print(max(exact, key=lambda r:r.get("last_activity_at") or 0)["id"] if exact else "")' "$HERMES_SESSION"
-  )"
-  if [[ -n "$PREVIOUS_SESSION_ID" ]]; then
-    if ! hermes sessions rename "$PREVIOUS_SESSION_ID" "$HERMES_SESSION-$PREVIOUS_SESSION_ID" >/dev/null; then
-      echo "Hermes could not archive the previous $HERMES_SESSION session. Run $RUN_ID remains pending." >&2
-      exit 1
-    fi
-    PREVIOUS_SESSION_RENAMED=1
-  fi
-
   # Feed credentials are needed only by the collector and are deliberately
-  # removed before the agent process starts. Omitting --continue gives every
-  # briefing a clean context; the completed session is renamed below so the
-  # latest run remains addressable as xkeep-brief.
+  # removed before the agent process starts. Resuming one named session keeps
+  # every briefing visible in the same Hermes Desktop conversation.
   if ! env -u AUTH_TOKEN -u CT0 hermes chat \
     --query-file "$QUERY" \
     --quiet \
     --source tool \
     --in "$ROOT" \
-    --run-budget 900 >"$FINAL_TMP" 2>"$SESSION_INFO"; then
-    cat "$SESSION_INFO" >&2
+    --continue "$HERMES_SESSION" \
+    --create-if-missing \
+    --run-budget 900 >"$FINAL_TMP"; then
     echo "Hermes failed. Run $RUN_ID remains pending and will be retried." >&2
     exit 1
   fi
-
-  SESSION_ID="$(sed -n 's/^session_id: //p' "$SESSION_INFO" | tail -1)"
-  if [[ -z "$SESSION_ID" ]] || ! hermes sessions rename "$SESSION_ID" "$HERMES_SESSION" >/dev/null; then
-    echo "Hermes completed but its fresh session could not be named $HERMES_SESSION. Run $RUN_ID remains pending." >&2
-    exit 1
-  fi
-  PREVIOUS_SESSION_RENAMED=0
 fi
 
 if [[ ! -s "$FINAL_TMP" ]]; then

@@ -26,7 +26,7 @@ The installer also attempts to schedule delivery at **08:00, 13:00, and 18:00 Am
 Schedule x-ai-brief for 8:00 AM, 1:00 PM, and 6:00 PM America/Denver and deliver it in this chat.
 ```
 
-When OpenClaw is absent, the installer prefers the locally installed Hermes CLI and creates one native Hermes scheduled job. Every run starts a fresh context, names the resulting session `xkeep-brief`, appears under one Hermes job history, and delivers the briefing to the configured Telegram home chat. Customize [interests.md](interests.md) before installing, or edit `~/.local/share/x-ai-brief/interests.md` afterward.
+When OpenClaw is absent, the installer prefers the locally installed Hermes CLI and creates one native Hermes scheduled job. Every run resumes the named `xkeep-brief` session so all briefings remain in one Hermes Desktop chat, appears under one Hermes job history, and delivers the briefing to the configured Telegram home chat. Customize [interests.md](interests.md) before installing, or edit `~/.local/share/x-ai-brief/interests.md` afterward.
 
 ## Authentication
 
@@ -78,7 +78,7 @@ systemctl --user list-timers x-ai-brief.timer
 less "$HOME/Documents/X AI Briefs/latest.md"
 ```
 
-The direct Hermes run passes arbitrary snapshot content through a query file, strips X cookie variables from the agent environment, starts without `--continue`, archives the previous canonical session under an ID-qualified title, and names the completed fresh session `xkeep-brief`. The title swap is restored if generation fails. Previous sessions remain stored, while `xkeep-brief` always resolves to the newest successful run. The direct Codex run uses a read-only sandbox and passes the feed on stdin as untrusted context. Both commit feed state only after a non-empty final briefing has been written.
+The direct Hermes run passes arbitrary snapshot content through a query file, strips X cookie variables from the agent environment, and resumes `xkeep-brief`. Hermes manages context compression as the conversation grows, while Desktop retains one stable chat. The direct Codex run uses a read-only sandbox and passes the feed on stdin as untrusted context. Both commit feed state only after a non-empty final briefing has been written.
 
 Run either engine directly when needed:
 

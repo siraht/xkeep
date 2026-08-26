@@ -23,7 +23,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Migrated scheduling ownership to one native Hermes cron job with Telegram delivery and a resumed `xkeep-brief` session; retained the systemd installer only as an explicit fallback.
 - Narrowed runtime installation to the files each runner actually needs after a stale copied `.git` directory blocked an update.
 - Made Hermes timezone refresh target the PID recorded by Hermes itself, so it works with either systemd or an external gateway supervisor without requiring root.
-- Kept the `xkeep-brief` name and unified cron history while creating a fresh Hermes context for every analytical run.
+- Restored one stable `xkeep-brief` session so every scheduled briefing appears in the same Hermes Desktop chat; Hermes handles context compression as needed.
 
 ### Decisions
 
@@ -33,6 +33,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Use systemd user timers for direct local scheduling and set `Timezone=America/Denver` explicitly.
 - Prefer Hermes when OpenClaw is unavailable while retaining the generated Codex fallback.
 - Keep failure recovery conservative for the first release: systemd retains the complete journal and failed feed runs remain pending. Do not add automatic code mutation until a recurring, safely repairable failure is observed.
+- Prefer one stable Desktop conversation over independent briefing contexts; it is the user-facing continuity that matters here.
 
 ### Lessons
 
