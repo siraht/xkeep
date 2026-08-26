@@ -10,6 +10,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Confirmed its collector test passes on Python 3.13.
 - Confirmed the pinned `reorx/xbird` revision and documented `home --following` command contract still exist upstream.
 - Confirmed the installed Hermes CLI supports quiet, non-interactive queries from a file.
+- Added a direct Hermes runner, editable interests file, and timezone-correct systemd user timer.
 
 ### Decisions
 
@@ -17,6 +18,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Keep the collector's prepare/commit state transition. It is slightly more code than the original plan's shell sketch, but prevents failed briefing runs from silently consuming feed items.
 - Keep feed provenance and rank on each normalized item rather than patching an external Birdclaw database. The local staged and archived run files provide the same evidence without coupling `xkeep` to another repository's schema.
 - Use systemd user timers for direct local scheduling and set `Timezone=America/Denver` explicitly.
+- Prefer Hermes when OpenClaw is unavailable while retaining the generated Codex fallback.
 
 ### Lessons
 

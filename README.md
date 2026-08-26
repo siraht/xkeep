@@ -1,6 +1,6 @@
-# x-ai-brief
+# xkeep
 
-`x-ai-brief` replaces X scrolling with an agent-reviewed briefing generated from the authenticated account's real **For You** and **Following** timelines.
+`xkeep` replaces X scrolling with an agent-reviewed briefing generated from the authenticated account's real **For You** and **Following** timelines. Its installed OpenClaw skill and service retain the `x-ai-brief` name for compatibility with the original bundle.
 
 It uses `xbird` when available, falls back to Peter Steinberger's `bird`, sends every unseen item from a bounded snapshot to the model, preserves the feed's ranking positions, and commits deduplication state only after the briefing has been drafted. It never invokes an X write action.
 
@@ -25,6 +25,8 @@ The installer also attempts to schedule delivery at **08:00, 13:00, and 18:00 Am
 ```text
 Schedule x-ai-brief for 8:00 AM, 1:00 PM, and 6:00 PM America/Denver and deliver it in this chat.
 ```
+
+When OpenClaw is absent, the installer prefers the locally installed Hermes CLI and creates a systemd user timer. Customize [interests.md](interests.md) before installing, or edit `~/.local/share/x-ai-brief/interests.md` afterward.
 
 ## Authentication
 
@@ -65,9 +67,9 @@ A prepared run stays pending until the agent calls `commit`. If an agent turn cr
 - Feed content is treated as untrusted input and cannot authorize commands or writes.
 - Cookie values are never written by this bundle. Browser-cookie extraction and X's undocumented GraphQL surface are still operational risks: X can break or rate-limit the client, so `xbird check` is the first diagnostic.
 
-## Direct Codex fallback
+## Direct Hermes and Codex runners
 
-When OpenClaw is not installed but Codex CLI is, `install.sh` installs a user-level systemd timer automatically. It runs the same two-phase collector through `codex exec` at 08:00, 13:00, and 18:00 in the host's local timezone, saves Markdown briefs in `~/Documents/X AI Briefs/`, and emits a desktop notification when `notify-send` is available.
+When OpenClaw is not installed, `install.sh` installs a user-level systemd timer automatically. Hermes is preferred when available, with Codex CLI retained as the fallback. Both paths run the same two-phase collector at 08:00, 13:00, and 18:00 America/Denver, save Markdown briefs in `~/Documents/X AI Briefs/`, and emit a desktop notification when `notify-send` is available.
 
 ```bash
 systemctl --user start x-ai-brief.service
@@ -76,4 +78,11 @@ systemctl --user list-timers x-ai-brief.timer
 less "$HOME/Documents/X AI Briefs/latest.md"
 ```
 
-The direct Codex run uses a read-only sandbox, passes the feed on stdin as untrusted context, and only commits feed state after Codex has written a non-empty final briefing.
+The direct Hermes run passes arbitrary snapshot content through a query file, strips X cookie variables from the agent environment, and saves only the final response from quiet mode. The direct Codex run uses a read-only sandbox and passes the feed on stdin as untrusted context. Both commit feed state only after a non-empty final briefing has been written.
+
+Run either engine directly when needed:
+
+```bash
+./run-hermes.sh
+./run-codex.sh
+```

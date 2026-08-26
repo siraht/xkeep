@@ -12,6 +12,7 @@ DO_SCHEDULE=1
 DO_STAGE=1
 OPENCLAW_AVAILABLE=0
 CODEX_FALLBACK_INSTALLED=0
+HERMES_FALLBACK_INSTALLED=0
 
 usage() {
   cat <<'EOF'
@@ -20,7 +21,8 @@ Usage: ./install.sh [--no-schedule] [--no-stage]
 Installs xbird when needed, installs x-ai-brief as a shared OpenClaw skill,
 creates a default configuration, verifies X authentication, stages the first
 feed snapshot, and attempts to schedule briefs for 08:00, 13:00, and 18:00
-America/Denver using the main session's last delivery route.
+America/Denver using the main session's last delivery route. Without OpenClaw,
+it installs a Hermes systemd timer (or a Codex timer when Hermes is absent).
 EOF
 }
 
@@ -144,20 +146,29 @@ if ((DO_SCHEDULE && OPENCLAW_AVAILABLE)); then
   fi
 fi
 
-if ((!OPENCLAW_AVAILABLE)) && command -v codex >/dev/null 2>&1; then
-  say "OpenClaw is absent; installing the direct Codex fallback and user timer"
-  "$ROOT/install-codex-timer.sh"
-  CODEX_FALLBACK_INSTALLED=1
+if ((!OPENCLAW_AVAILABLE)); then
+  if command -v hermes >/dev/null 2>&1; then
+    say "OpenClaw is absent; installing the direct Hermes runner and user timer"
+    "$ROOT/install-hermes-timer.sh"
+    HERMES_FALLBACK_INSTALLED=1
+  elif command -v codex >/dev/null 2>&1; then
+    say "OpenClaw and Hermes are absent; installing the direct Codex fallback and user timer"
+    "$ROOT/install-codex-timer.sh"
+    CODEX_FALLBACK_INSTALLED=1
+  fi
 fi
 
 say "Installed"
 if ((OPENCLAW_AVAILABLE)); then
   echo "Run it immediately from OpenClaw with: /x-ai-brief"
+elif ((HERMES_FALLBACK_INSTALLED)); then
+  echo "Run it immediately with: systemctl --user start x-ai-brief.service"
+  echo "Read the result at: $HOME/Documents/X AI Briefs/latest.md"
 elif ((CODEX_FALLBACK_INSTALLED)); then
   echo "Run it immediately with: systemctl --user start x-ai-brief.service"
   echo "Read the result at: $HOME/Documents/X AI Briefs/latest.md"
 else
-  echo "Neither OpenClaw nor Codex CLI was found; the collector is installed, but an agent engine still needs to be connected."
+  echo "Neither OpenClaw, Hermes, nor Codex CLI was found; the collector is installed, but an agent engine still needs to be connected."
 fi
 echo "Collector status: python3 '$INSTALLED/scripts/x_feed.py' status"
 echo "Configuration: $CONFIG_FILE"

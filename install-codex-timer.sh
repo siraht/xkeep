@@ -22,6 +22,7 @@ Wants=network-online.target
 
 [Service]
 Type=oneshot
+Environment=PATH=%h/.local/bin:%h/.cargo/bin:/usr/local/bin:/usr/bin:/bin
 ExecStart=/bin/bash %h/.local/share/x-ai-brief/run-codex.sh
 EOF
 
@@ -33,6 +34,7 @@ Description=Generate X AI briefs three times daily
 OnCalendar=*-*-* 08:00:00
 OnCalendar=*-*-* 13:00:00
 OnCalendar=*-*-* 18:00:00
+Timezone=America/Denver
 Persistent=true
 RandomizedDelaySec=60
 Unit=x-ai-brief.service
