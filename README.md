@@ -44,7 +44,7 @@ If X changes a GraphQL query ID:
 xbird query-ids --fresh
 ```
 
-You may instead supply `AUTH_TOKEN` and `CT0` through the process environment, but browser extraction avoids copying long-lived cookies into configuration files.
+You may instead supply `AUTH_TOKEN` and `CT0` through the process environment. When the browser is on another machine, run `./configure-x-auth.sh` on the machine hosting xkeep and paste only those two X cookie values into its hidden prompts. They are saved to `~/.config/x-ai-brief/credentials.env` with mode `600`; they are loaded only for feed collection and removed from the Hermes process environment.
 
 ## What “the feed” means
 

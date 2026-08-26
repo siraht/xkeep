@@ -64,6 +64,21 @@ class FeedError(RuntimeError):
     pass
 
 
+def load_x_credentials() -> None:
+    """Load only AUTH_TOKEN and CT0 from the private local credentials file."""
+    configured = os.environ.get("X_AI_BRIEF_CREDENTIALS")
+    credential_path = Path(configured).expanduser() if configured else Path.home() / ".config" / "x-ai-brief" / "credentials.env"
+    if not credential_path.exists():
+        return
+    try:
+        for line in credential_path.read_text(encoding="utf-8").splitlines():
+            key, separator, value = line.partition("=")
+            if separator and key in {"AUTH_TOKEN", "CT0"} and value:
+                os.environ.setdefault(key, value)
+    except OSError as exc:
+        raise FeedError(f"Cannot read X credentials from {credential_path}: {exc}") from exc
+
+
 @dataclass(frozen=True)
 class Paths:
     config: Path
@@ -704,6 +719,7 @@ def main() -> int:
     args = parser.parse_args()
     p = paths()
     try:
+        load_x_credentials()
         config = load_config(p)
         args.handler(args, p, config)
         return 0
