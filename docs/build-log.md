@@ -25,6 +25,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Made Hermes timezone refresh target the PID recorded by Hermes itself, so it works with either systemd or an external gateway supervisor without requiring root.
 - Restored one stable `xkeep-brief` session so every scheduled briefing appears in the same Hermes Desktop chat; Hermes handles context compression as needed.
 - Diagnosed the first automatic Hermes run failure: cron's sanitized PATH excluded both user-local `xbird` and `hermes`; made executable discovery independent of interactive shell startup.
+- Replayed the failed job through the real gateway environment: 200 For You plus 100 Following items fetched, 187 unseen items reviewed, six stories selected, state committed, the stable Desktop session updated, and Telegram delivery completed without error.
 
 ### Decisions
 
