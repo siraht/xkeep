@@ -5,6 +5,7 @@ ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 COLLECTOR="$ROOT/scripts/x_feed.py"
 INTERESTS_FILE="${XKEEP_INTERESTS_FILE:-$ROOT/interests.md}"
 OUTPUT_DIR="${X_AI_BRIEF_OUTPUT_DIR:-$HOME/Documents/X AI Briefs}"
+HERMES_SESSION="${XKEEP_HERMES_SESSION:-xkeep-brief}"
 mkdir -p "$OUTPUT_DIR"
 
 if ! command -v hermes >/dev/null 2>&1; then
@@ -76,6 +77,8 @@ EOF
     --quiet \
     --source tool \
     --in "$ROOT" \
+    --continue "$HERMES_SESSION" \
+    --create-if-missing \
     --run-budget 900 >"$FINAL_TMP"; then
     echo "Hermes failed. Run $RUN_ID remains pending and will be retried." >&2
     exit 1
@@ -93,8 +96,12 @@ cp "$FINAL_TMP" "$BRIEF_FILE"
 ln -sfn "$BRIEF_FILE" "$OUTPUT_DIR/latest.md"
 python3 "$COLLECTOR" commit "$RUN_ID" --note "Hermes briefing saved to $BRIEF_FILE" >/dev/null
 
-if command -v notify-send >/dev/null 2>&1; then
+if [[ "${XKEEP_NOTIFY:-1}" == "1" ]] && command -v notify-send >/dev/null 2>&1; then
   timeout 5s notify-send "X AI brief ready" "Saved to $BRIEF_FILE" || true
 fi
 
-printf '\nSaved: %s\n' "$BRIEF_FILE"
+if [[ "${XKEEP_PRINT_BRIEF:-0}" == "1" ]]; then
+  cat "$BRIEF_FILE"
+else
+  printf '\nSaved: %s\n' "$BRIEF_FILE"
+fi
