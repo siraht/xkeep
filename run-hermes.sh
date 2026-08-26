@@ -94,7 +94,7 @@ ln -sfn "$BRIEF_FILE" "$OUTPUT_DIR/latest.md"
 python3 "$COLLECTOR" commit "$RUN_ID" --note "Hermes briefing saved to $BRIEF_FILE" >/dev/null
 
 if command -v notify-send >/dev/null 2>&1; then
-  notify-send "X AI brief ready" "Saved to $BRIEF_FILE" || true
+  timeout 5s notify-send "X AI brief ready" "Saved to $BRIEF_FILE" || true
 fi
 
 printf '\nSaved: %s\n' "$BRIEF_FILE"
