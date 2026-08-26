@@ -31,10 +31,9 @@ cat > "$UNIT_DIR/x-ai-brief.timer" <<'EOF'
 Description=Generate X AI briefs three times daily
 
 [Timer]
-OnCalendar=*-*-* 08:00:00
-OnCalendar=*-*-* 13:00:00
-OnCalendar=*-*-* 18:00:00
-Timezone=America/Denver
+OnCalendar=*-*-* 08:00:00 America/Denver
+OnCalendar=*-*-* 13:00:00 America/Denver
+OnCalendar=*-*-* 18:00:00 America/Denver
 Persistent=true
 RandomizedDelaySec=60
 Unit=x-ai-brief.service

@@ -13,6 +13,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Added a direct Hermes runner, editable interests file, and timezone-correct systemd user timer.
 - Added an end-to-end local check of the Hermes prepare, generate, save, and commit transaction.
 - Bounded optional desktop notifications so a missing notification bus cannot stall a headless systemd run.
+- Corrected systemd schedules to encode `America/Denver` in each calendar expression.
 
 ### Decisions
 
@@ -27,3 +28,4 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - The baseline already reviews the complete bounded snapshot, deduplicates posts while preserving both feed positions, and commits seen state only after successful output.
 - The original plan named Birdclaw, but the delivered baseline targets the actively maintained Linux-compatible `reorx/xbird`. Supporting its documented interface keeps the project self-contained.
 - Optional desktop integrations need explicit time bounds under user services; command availability alone does not guarantee a reachable desktop bus.
+- systemd timer units do not have a standalone `Timezone=` key; timezone-qualified `OnCalendar=` expressions are the portable form.
