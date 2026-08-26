@@ -1,3 +1,4 @@
 # Keep the supplied source archive in the workspace without publishing a
 # duplicate binary copy; every file it contains is tracked in this repository.
 /x-ai-brief.zip
+/tests/__pycache__/
