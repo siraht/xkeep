@@ -15,6 +15,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Bounded optional desktop notifications so a missing notification bus cannot stall a headless systemd run.
 - Corrected systemd schedules to encode `America/Denver` in each calendar expression.
 - Added a hidden-prompt credential helper for the common case where the authenticated browser runs on a different machine.
+- Made remote credential entry accept both raw cookie values and Zen's labeled, quoted copy format.
 
 ### Decisions
 

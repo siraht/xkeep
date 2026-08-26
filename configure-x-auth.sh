@@ -11,8 +11,25 @@ printf '\n'
 read -rsp 'ct0: ' CT0_VALUE
 printf '\n'
 
-if [[ ! "$AUTH_TOKEN_VALUE" =~ ^[A-Za-z0-9._~+-]+$ ]] || [[ ! "$CT0_VALUE" =~ ^[A-Za-z0-9._~+-]+$ ]]; then
-  echo 'Credentials were empty or contained unexpected characters; nothing was saved.' >&2
+normalize_cookie() {
+  local name="$1"
+  local value="$2"
+  value="${value//$'\r'/}"
+  if [[ "$value" =~ ^[[:space:]]*${name}[[:space:]]*[:=][[:space:]]*(.*)$ ]]; then
+    value="${BASH_REMATCH[1]}"
+  fi
+  value="${value#\"}"
+  value="${value%\"}"
+  value="${value#\'}"
+  value="${value%\'}"
+  printf '%s' "$value"
+}
+
+AUTH_TOKEN_VALUE="$(normalize_cookie auth_token "$AUTH_TOKEN_VALUE")"
+CT0_VALUE="$(normalize_cookie ct0 "$CT0_VALUE")"
+
+if [[ -z "$AUTH_TOKEN_VALUE" || -z "$CT0_VALUE" || "$AUTH_TOKEN_VALUE" == *$'\n'* || "$CT0_VALUE" == *$'\n'* ]]; then
+  echo 'Credentials were empty or malformed; nothing was saved.' >&2
   exit 1
 fi
 
