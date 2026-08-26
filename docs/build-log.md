@@ -16,6 +16,10 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Corrected systemd schedules to encode `America/Denver` in each calendar expression.
 - Added a hidden-prompt credential helper for the common case where the authenticated browser runs on a different machine.
 - Made remote credential entry accept both raw cookie values and Zen's labeled, quoted copy format.
+- Verified the pinned `xbird` 1.2.0 revision against the real `@t_r_hinton` account.
+- Completed a real 200-item For You plus 100-item Following collection: 294 unique unseen items, five cross-feed overlaps, all ranks retained, and no collector warnings.
+- Completed a real Hermes briefing: six requested sections, 23 direct X links, a coverage statement, committed seen state, and no pending run.
+- Installed and manually exercised the systemd user service. It exited successfully, produced a second real briefing, and left the timer enabled and waiting for the next America/Denver schedule.
 
 ### Decisions
 
@@ -24,6 +28,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Keep feed provenance and rank on each normalized item rather than patching an external Birdclaw database. The local staged and archived run files provide the same evidence without coupling `xkeep` to another repository's schema.
 - Use systemd user timers for direct local scheduling and set `Timezone=America/Denver` explicitly.
 - Prefer Hermes when OpenClaw is unavailable while retaining the generated Codex fallback.
+- Keep failure recovery conservative for the first release: systemd retains the complete journal and failed feed runs remain pending. Do not add automatic code mutation until a recurring, safely repairable failure is observed.
 
 ### Lessons
 
@@ -32,3 +37,4 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Optional desktop integrations need explicit time bounds under user services; command availability alone does not guarantee a reachable desktop bus.
 - systemd timer units do not have a standalone `Timezone=` key; timezone-qualified `OnCalendar=` expressions are the portable form.
 - Copying a whole browser cookie database is unnecessary and overbroad; the remote collector needs only X's `auth_token` and `ct0` values.
+- Personalized X snapshots can churn substantially within minutes. Transactional seen-state and full-snapshot review are useful; pretending the feed is a canonical, exhaustively synchronizable stream would be misleading.
