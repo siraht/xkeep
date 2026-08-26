@@ -148,8 +148,8 @@ fi
 
 if ((!OPENCLAW_AVAILABLE)); then
   if command -v hermes >/dev/null 2>&1; then
-    say "OpenClaw is absent; installing the direct Hermes runner and user timer"
-    "$ROOT/install-hermes-timer.sh"
+    say "OpenClaw is absent; installing the native Hermes scheduled job"
+    "$ROOT/install-hermes-cron.sh"
     HERMES_FALLBACK_INSTALLED=1
   elif command -v codex >/dev/null 2>&1; then
     say "OpenClaw and Hermes are absent; installing the direct Codex fallback and user timer"
@@ -162,7 +162,7 @@ say "Installed"
 if ((OPENCLAW_AVAILABLE)); then
   echo "Run it immediately from OpenClaw with: /x-ai-brief"
 elif ((HERMES_FALLBACK_INSTALLED)); then
-  echo "Run it immediately with: systemctl --user start x-ai-brief.service"
+  echo "Run it immediately with the job ID shown by: hermes cron list"
   echo "Read the result at: $HOME/Documents/X AI Briefs/latest.md"
 elif ((CODEX_FALLBACK_INSTALLED)); then
   echo "Run it immediately with: systemctl --user start x-ai-brief.service"

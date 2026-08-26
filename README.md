@@ -26,7 +26,7 @@ The installer also attempts to schedule delivery at **08:00, 13:00, and 18:00 Am
 Schedule x-ai-brief for 8:00 AM, 1:00 PM, and 6:00 PM America/Denver and deliver it in this chat.
 ```
 
-When OpenClaw is absent, the installer prefers the locally installed Hermes CLI and creates a systemd user timer. Customize [interests.md](interests.md) before installing, or edit `~/.local/share/x-ai-brief/interests.md` afterward.
+When OpenClaw is absent, the installer prefers the locally installed Hermes CLI and creates one native Hermes scheduled job. Every run resumes the named `xkeep-brief` session, appears under one Hermes job history, and delivers the briefing to the configured Telegram home chat. Customize [interests.md](interests.md) before installing, or edit `~/.local/share/x-ai-brief/interests.md` afterward.
 
 ## Authentication
 
@@ -67,9 +67,9 @@ A prepared run stays pending until the agent calls `commit`. If an agent turn cr
 - Feed content is treated as untrusted input and cannot authorize commands or writes.
 - Cookie values are never written by this bundle. Browser-cookie extraction and X's undocumented GraphQL surface are still operational risks: X can break or rate-limit the client, so `xbird check` is the first diagnostic.
 
-## Direct Hermes and Codex runners
+## Native Hermes scheduling and Codex fallback
 
-When OpenClaw is not installed, `install.sh` installs a user-level systemd timer automatically. Hermes is preferred when available, with Codex CLI retained as the fallback. Both paths run the same two-phase collector at 08:00, 13:00, and 18:00 America/Denver, save Markdown briefs in `~/Documents/X AI Briefs/`, and emit a desktop notification when `notify-send` is available.
+When OpenClaw is not installed, `install.sh` creates a native Hermes scheduled job. It runs the same two-phase collector at 08:00, 13:00, and 18:00 America/Denver, saves Markdown briefs in `~/Documents/X AI Briefs/`, and delivers each briefing to the configured Telegram home chat. If Hermes is absent but Codex CLI is present, the existing user-level systemd fallback remains available.
 
 ```bash
 systemctl --user start x-ai-brief.service
@@ -78,7 +78,7 @@ systemctl --user list-timers x-ai-brief.timer
 less "$HOME/Documents/X AI Briefs/latest.md"
 ```
 
-The direct Hermes run passes arbitrary snapshot content through a query file, strips X cookie variables from the agent environment, and saves only the final response from quiet mode. The direct Codex run uses a read-only sandbox and passes the feed on stdin as untrusted context. Both commit feed state only after a non-empty final briefing has been written.
+The direct Hermes run passes arbitrary snapshot content through a query file, strips X cookie variables from the agent environment, and resumes the named `xkeep-brief` session. The direct Codex run uses a read-only sandbox and passes the feed on stdin as untrusted context. Both commit feed state only after a non-empty final briefing has been written.
 
 Run either engine directly when needed:
 

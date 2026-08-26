@@ -20,6 +20,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Completed a real 200-item For You plus 100-item Following collection: 294 unique unseen items, five cross-feed overlaps, all ranks retained, and no collector warnings.
 - Completed a real Hermes briefing: six requested sections, 23 direct X links, a coverage statement, committed seen state, and no pending run.
 - Installed and manually exercised the systemd user service. It exited successfully, produced a second real briefing, and left the timer enabled and waiting for the next America/Denver schedule.
+- Migrated scheduling ownership to one native Hermes cron job with Telegram delivery and a resumed `xkeep-brief` session; retained the systemd installer only as an explicit fallback.
 
 ### Decisions
 
