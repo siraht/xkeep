@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -Eeuo pipefail
 
+# Hermes deliberately sanitizes scheduled-script environments. Keep runtime
+# dependencies deterministic instead of relying on an interactive shell PATH.
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:${PATH:-/usr/local/bin:/usr/bin:/bin}"
+
 ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
 COLLECTOR="$ROOT/scripts/x_feed.py"
 INTERESTS_FILE="${XKEEP_INTERESTS_FILE:-$ROOT/interests.md}"

@@ -5,9 +5,9 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 export HOME="$TMP/home"
 export OPENCLAW_STATE_DIR="$TMP/openclaw"
-mkdir -p "$HOME/.config/x-ai-brief" "$TMP/bin"
-ln -s "$ROOT/tests/fake_xbird.py" "$TMP/bin/xbird"
-export PATH="$TMP/bin:$PATH"
+mkdir -p "$HOME/.config/x-ai-brief" "$HOME/.local/bin"
+ln -s "$ROOT/tests/fake_xbird.py" "$HOME/.local/bin/xbird"
+export PATH="$HOME/.local/bin:$PATH"
 cp "$ROOT/config.example.json" "$HOME/.config/x-ai-brief/config.json"
 
 FIRST="$TMP/first.json"
@@ -32,8 +32,11 @@ python3 -c 'import json,sys; assert json.load(open(sys.argv[1]))["seenCount"] ==
 
 # Exercise the Hermes runner's prepare -> brief -> save -> commit transaction.
 python3 "$ROOT/scripts/x_feed.py" reset --yes >/dev/null
-ln -s "$ROOT/tests/fake_hermes.sh" "$TMP/bin/hermes"
+ln -s "$ROOT/tests/fake_hermes.sh" "$HOME/.local/bin/hermes"
 export X_AI_BRIEF_OUTPUT_DIR="$TMP/briefs"
+# Match the sanitized PATH used by Hermes cron. The runner must restore access
+# to user-local xbird and Hermes itself.
+export PATH="/usr/local/bin:/usr/bin:/bin"
 "$ROOT/run-hermes.sh" >"$TMP/hermes-run.txt"
 test -s "$TMP/briefs/latest.md"
 grep -Fq '# X AI Brief' "$TMP/briefs/latest.md"

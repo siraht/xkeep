@@ -260,15 +260,25 @@ def find_reusable_pending(p: Paths, hours: int) -> Path | None:
     return max(candidates, key=lambda item: item.stat().st_mtime)
 
 
+def find_executable(name: str) -> str | None:
+    discovered = shutil.which(name)
+    if discovered:
+        return discovered
+    user_local = Path.home() / ".local" / "bin" / name
+    if user_local.is_file() and os.access(user_local, os.X_OK):
+        return str(user_local)
+    return None
+
+
 def cli_command(config: dict[str, Any]) -> list[str]:
     configured = config.get("xCli") or os.environ.get("X_AI_BRIEF_CLI")
     if isinstance(configured, str) and configured.strip():
         parts = configured.strip().split()
-        if shutil.which(parts[0]) or Path(parts[0]).exists():
+        if find_executable(parts[0]) or (Path(parts[0]).is_file() and os.access(parts[0], os.X_OK)):
             return parts
         raise FeedError(f"Configured X CLI is not executable: {parts[0]}")
     for name in ("xbird", "bird"):
-        binary = shutil.which(name)
+        binary = find_executable(name)
         if binary:
             return [binary]
     raise FeedError(
@@ -670,7 +680,7 @@ def command_status(args: argparse.Namespace, p: Paths, config: dict[str, Any]) -
         "schemaVersion": VERSION,
         "configPath": str(p.config),
         "stateDirectory": str(p.base),
-        "xCli": cli_command(config)[0] if any(shutil.which(name) for name in ("xbird", "bird")) or config.get("xCli") else None,
+        "xCli": cli_command(config)[0] if any(find_executable(name) for name in ("xbird", "bird")) or config.get("xCli") else None,
         "lastCommittedAt": state.get("lastCommittedAt"),
         "seenCount": len(state.get("seen", {})),
         "pendingRuns": pending,

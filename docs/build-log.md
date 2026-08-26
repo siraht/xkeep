@@ -24,6 +24,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Narrowed runtime installation to the files each runner actually needs after a stale copied `.git` directory blocked an update.
 - Made Hermes timezone refresh target the PID recorded by Hermes itself, so it works with either systemd or an external gateway supervisor without requiring root.
 - Restored one stable `xkeep-brief` session so every scheduled briefing appears in the same Hermes Desktop chat; Hermes handles context compression as needed.
+- Diagnosed the first automatic Hermes run failure: cron's sanitized PATH excluded both user-local `xbird` and `hermes`; made executable discovery independent of interactive shell startup.
 
 ### Decisions
 
@@ -47,3 +48,4 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - A machine can have more than one Hermes gateway supervisor configured. The scheduler should follow Hermes' live PID file instead of guessing which service owns the active gateway.
 - Hermes single-query mode treats `/new` as model input rather than a slash command. A new unnamed invocation followed by a deterministic rename gives recurring briefs clean context without depending on the interactive command loop.
 - Hermes session titles are unique. Preserving one stable title with fresh contexts requires a transactional title swap: archive the predecessor by ID, promote the successful new session, and restore the predecessor on failure.
+- A successful manual cron trigger does not prove the gateway's later environment is equivalent: supervised restarts can replace an inherited interactive PATH with the scheduler's intentional minimal PATH. Runtime entrypoints must declare their executable search path.
