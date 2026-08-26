@@ -23,6 +23,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Migrated scheduling ownership to one native Hermes cron job with Telegram delivery and a resumed `xkeep-brief` session; retained the systemd installer only as an explicit fallback.
 - Narrowed runtime installation to the files each runner actually needs after a stale copied `.git` directory blocked an update.
 - Made Hermes timezone refresh target the PID recorded by Hermes itself, so it works with either systemd or an external gateway supervisor without requiring root.
+- Kept the `xkeep-brief` name and unified cron history while creating a fresh Hermes context for every analytical run.
 
 ### Decisions
 
@@ -43,3 +44,5 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Personalized X snapshots can churn substantially within minutes. Transactional seen-state and full-snapshot review are useful; pretending the feed is a canonical, exhaustively synchronizable stream would be misleading.
 - Runtime installers should install runtime files, not clone repository metadata and source archives into application state.
 - A machine can have more than one Hermes gateway supervisor configured. The scheduler should follow Hermes' live PID file instead of guessing which service owns the active gateway.
+- Hermes single-query mode treats `/new` as model input rather than a slash command. A new unnamed invocation followed by a deterministic rename gives recurring briefs clean context without depending on the interactive command loop.
+- Hermes session titles are unique. Preserving one stable title with fresh contexts requires a transactional title swap: archive the predecessor by ID, promote the successful new session, and restore the predecessor on failure.
