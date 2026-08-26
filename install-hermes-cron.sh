@@ -6,6 +6,7 @@ DEST="$HOME/.local/share/x-ai-brief"
 HERMES_SCRIPT_DIR="$HOME/.hermes/scripts"
 HERMES_SCRIPT="$HERMES_SCRIPT_DIR/xkeep-brief.sh"
 JOBS_FILE="$HOME/.hermes/cron/jobs.json"
+GATEWAY_PID_FILE="$HOME/.hermes/gateway.pid"
 JOB_NAME="X AI brief"
 
 if ! command -v hermes >/dev/null 2>&1; then
@@ -80,16 +81,31 @@ PY
 )"
 fi
 
-# The Hermes gateway caches timezone configuration. Its system service runs
-# the agent as this user, so a direct TERM lets systemd's Restart= policy
-# refresh it without requiring an interactive root authorization.
-if [[ "$PREVIOUS_TIMEZONE" != "America/Denver" ]] && systemctl is-active --quiet hermes-gateway.service; then
-  GATEWAY_PID="$(systemctl show hermes-gateway.service -p MainPID --value)"
-  if [[ "$GATEWAY_PID" =~ ^[1-9][0-9]*$ ]]; then
+# The gateway caches timezone configuration. Restart the gateway recorded by
+# Hermes itself; its supervisor brings it back without root access.
+if [[ "$PREVIOUS_TIMEZONE" != "America/Denver" && -r "$GATEWAY_PID_FILE" ]]; then
+  GATEWAY_PID="$(python3 - "$GATEWAY_PID_FILE" <<'PY'
+import json, sys
+
+try:
+    print(json.load(open(sys.argv[1], encoding="utf-8")).get("pid", ""))
+except (OSError, ValueError):
+    pass
+PY
+)"
+  if [[ "$GATEWAY_PID" =~ ^[1-9][0-9]*$ ]] && kill -0 "$GATEWAY_PID" 2>/dev/null; then
     kill -TERM "$GATEWAY_PID"
     for _ in {1..30}; do
-      NEW_PID="$(systemctl show hermes-gateway.service -p MainPID --value)"
-      if systemctl is-active --quiet hermes-gateway.service && [[ "$NEW_PID" != "$GATEWAY_PID" && "$NEW_PID" != "0" ]]; then
+      NEW_PID="$(python3 - "$GATEWAY_PID_FILE" <<'PY'
+import json, sys
+
+try:
+    print(json.load(open(sys.argv[1], encoding="utf-8")).get("pid", ""))
+except (OSError, ValueError):
+    pass
+PY
+)"
+      if [[ "$NEW_PID" =~ ^[1-9][0-9]*$ && "$NEW_PID" != "$GATEWAY_PID" ]] && kill -0 "$NEW_PID" 2>/dev/null; then
         break
       fi
       sleep 1

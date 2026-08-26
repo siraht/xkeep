@@ -22,7 +22,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Installed and manually exercised the systemd user service. It exited successfully, produced a second real briefing, and left the timer enabled and waiting for the next America/Denver schedule.
 - Migrated scheduling ownership to one native Hermes cron job with Telegram delivery and a resumed `xkeep-brief` session; retained the systemd installer only as an explicit fallback.
 - Narrowed runtime installation to the files each runner actually needs after a stale copied `.git` directory blocked an update.
-- Made Hermes timezone refresh work with its root-managed service by restarting the user-owned gateway process only when the configured timezone changes.
+- Made Hermes timezone refresh target the PID recorded by Hermes itself, so it works with either systemd or an external gateway supervisor without requiring root.
 
 ### Decisions
 
@@ -42,3 +42,4 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Copying a whole browser cookie database is unnecessary and overbroad; the remote collector needs only X's `auth_token` and `ct0` values.
 - Personalized X snapshots can churn substantially within minutes. Transactional seen-state and full-snapshot review are useful; pretending the feed is a canonical, exhaustively synchronizable stream would be misleading.
 - Runtime installers should install runtime files, not clone repository metadata and source archives into application state.
+- A machine can have more than one Hermes gateway supervisor configured. The scheduler should follow Hermes' live PID file instead of guessing which service owns the active gateway.
