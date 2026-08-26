@@ -29,8 +29,26 @@ python3 "$ROOT/scripts/x_feed.py" prepare --fresh >"$TMP/second.json"
 python3 -c 'import json,sys; assert json.load(open(sys.argv[1]))["counts"]["uniqueUnseenForAgent"] == 0' "$TMP/second.json"
 python3 "$ROOT/scripts/x_feed.py" status >"$TMP/status.json"
 python3 -c 'import json,sys; assert json.load(open(sys.argv[1]))["seenCount"] == 3' "$TMP/status.json"
+
+# Exercise the Hermes runner's prepare -> brief -> save -> commit transaction.
+python3 "$ROOT/scripts/x_feed.py" reset --yes >/dev/null
+ln -s "$ROOT/tests/fake_hermes.sh" "$TMP/bin/hermes"
+export X_AI_BRIEF_OUTPUT_DIR="$TMP/briefs"
+"$ROOT/run-hermes.sh" >"$TMP/hermes-run.txt"
+test -s "$TMP/briefs/latest.md"
+grep -Fq '# X AI Brief' "$TMP/briefs/latest.md"
+python3 "$ROOT/scripts/x_feed.py" status >"$TMP/hermes-status.json"
+python3 - "$TMP/hermes-status.json" <<'PY'
+import json, sys
+p = json.load(open(sys.argv[1]))
+assert p['seenCount'] == 3
+assert p['pendingRuns'] == []
+PY
+
 python3 -m py_compile "$ROOT/scripts/x_feed.py"
 echo "all tests passed"
 bash -n "$ROOT/install.sh"
 bash -n "$ROOT/run-codex.sh"
 bash -n "$ROOT/install-codex-timer.sh"
+bash -n "$ROOT/run-hermes.sh"
+bash -n "$ROOT/install-hermes-timer.sh"
