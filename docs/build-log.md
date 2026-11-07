@@ -9,6 +9,7 @@ This log records implementation progress, decisions, and lessons for `xkeep`.
 - Broadened the briefing from a narrow consequential-AI filter to an inclusion-biased digest spanning any concrete, useful, novel, surprising, or interesting feed material.
 - Replaced low story caps with a 25–50 story target and required exactly one distinct story per single-line paragraph.
 - Removed coverage statistics, skipped-item commentary, empty-section prose, recaps, and negative category disclaimers from the output contract.
+- Verified the policy through the real Hermes cron path: 156 unseen items produced 41 distinct single-line story paragraphs across six populated sections, with no filtering commentary or delivery error.
 
 ### Decisions
 
