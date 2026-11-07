@@ -36,25 +36,21 @@ DEFAULT_CONFIG: dict[str, Any] = {
     "commandTimeoutSeconds": 180,
     "xCli": None,
     "briefingProfile": {
-        "mission": "Keep me current on consequential AI developments without making me browse X.",
+        "mission": "Replace browsing X with a broad, information-dense briefing of everything genuinely useful, novel, surprising, or interesting in the sampled feed.",
         "prioritize": [
-            "new model releases, capability changes, context limits, pricing, quotas, and access changes",
-            "coding agents, agent harnesses, computer use, orchestration, memory, evaluation, and reliability",
-            "open-source repositories, useful tools, reproducible demos, and implementation details",
-            "benchmarks and evaluations with enough methodology to judge the result",
-            "inference, training, hardware, local AI, APIs, and developer infrastructure",
-            "security incidents, policy or platform changes, and ecosystem shifts with practical consequences",
-            "technical analysis or research that changes what I should build, buy, test, or learn next"
+            "concrete facts, releases, claims, techniques, resources, firsthand observations, substantive arguments, and genuinely novel ideas",
+            "AI models, agents, tools, research, infrastructure, benchmarks, and useful demos",
+            "software, open-source projects, developer tools, hardware, security, science, and engineering",
+            "products, startups, business, markets, platforms, and policy",
+            "strong explainers, useful recommendations, design, media, culture, and surprising original observations"
         ],
         "deprioritize": [
-            "memes, engagement bait, personality drama, tribal discourse, vague predictions, and recycled takes",
-            "launch repetition without additional facts, affiliate promotion, and demos with no inspectable evidence",
-            "raw popularity when the item has little practical or technical substance"
+            "pure spam, affiliate promotion, engagement bait, and contextless reactions with no standalone information",
+            "exact repetition that adds no facts, perspective, source, or useful detail"
         ],
-        "mustKnowMax": 7,
-        "worthSkimmingMax": 8,
-        "watchlistMax": 3,
-        "targetReadingMinutes": 8,
+        "targetStoryMinimum": 25,
+        "targetStoryMaximum": 50,
+        "targetReadingMinutes": 20,
         "verifyTopClaimsWhenToolsPermit": True
     }
 }

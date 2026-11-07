@@ -15,15 +15,16 @@ done
 
 [[ -s "$QUERY_FILE" ]]
 grep -Fq '<untrusted-feed-json>' "$QUERY_FILE"
-grep -Fq '## New tools, models, and releases' "$QUERY_FILE"
-grep -Fq 'Open-source AI tools' "$QUERY_FILE"
+grep -Fq '## Other interesting items' "$QUERY_FILE"
+grep -Fq 'strong bias toward inclusion' "$QUERY_FILE"
+grep -Fq 'one story per paragraph' "$QUERY_FILE"
+grep -Fq 'Do not mention skipped' "$QUERY_FILE"
+grep -Fq 'Interesting or surprising items are welcome' "$QUERY_FILE"
 
 cat <<'EOF'
 # X AI Brief — test
 
-## Must know
+## Tools, models, and releases
 
-Agent runtime v2 was released. https://x.com/dev/status/2
-
-Coverage: reviewed 3 unseen items from 2 For You and 2 Following results. Selected 1 story.
+**Agent runtime v2 released.** The release adds deterministic task replay and structured logs. https://x.com/dev/status/2
 EOF

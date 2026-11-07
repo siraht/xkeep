@@ -2,6 +2,19 @@
 
 This log records implementation progress, decisions, and lessons for `xkeep`.
 
+## 2026-11-07
+
+### Progress
+
+- Broadened the briefing from a narrow consequential-AI filter to an inclusion-biased digest spanning any concrete, useful, novel, surprising, or interesting feed material.
+- Replaced low story caps with a 25–50 story target and required exactly one distinct story per single-line paragraph.
+- Removed coverage statistics, skipped-item commentary, empty-section prose, recaps, and negative category disclaimers from the output contract.
+
+### Decisions
+
+- A briefing should report information, not narrate its own filtering. Items not included remain invisible to the reader.
+- Deduplicate the same event, but never merge merely related developments into one paragraph.
+
 ## 2026-08-26
 
 ### Progress

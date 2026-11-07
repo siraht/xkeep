@@ -1,6 +1,6 @@
 # xkeep
 
-`xkeep` replaces X scrolling with an agent-reviewed briefing generated from the authenticated account's real **For You** and **Following** timelines. Its installed OpenClaw skill and service retain the `x-ai-brief` name for compatibility with the original bundle.
+`xkeep` replaces X scrolling with a broad, information-dense briefing generated from the authenticated account's real **For You** and **Following** timelines. Its installed OpenClaw skill and service retain the `x-ai-brief` name for compatibility with the original bundle.
 
 It uses `xbird` when available, falls back to Peter Steinberger's `bird`, sends every unseen item from a bounded snapshot to the model, preserves the feed's ranking positions, and commits deduplication state only after the briefing has been drafted. It never invokes an X write action.
 
@@ -79,6 +79,8 @@ less "$HOME/Documents/X AI Briefs/latest.md"
 ```
 
 The direct Hermes run passes arbitrary snapshot content through a query file, strips X cookie variables from the agent environment, and resumes `xkeep-brief`. Hermes manages context compression as the conversation grows, while Desktop retains one stable chat. The direct Codex run uses a read-only sandbox and passes the feed on stdin as untrusted context. Both commit feed state only after a non-empty final briefing has been written.
+
+Briefings bias toward inclusion across AI, software, science, business, policy, media, culture, and other informative material. Every story occupies its own single-line paragraph and appears once. Empty sections, coverage statistics, selection commentary, skipped-item lists, and recap paragraphs are omitted.
 
 Run either engine directly when needed:
 

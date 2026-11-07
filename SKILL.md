@@ -1,10 +1,10 @@
 ---
 name: x-ai-brief
-description: Read the user's authenticated X For You and Following timelines and replace scrolling with a high-signal AI briefing.
+description: Read the user's authenticated X For You and Following timelines and replace scrolling with a broad, information-dense briefing.
 user-invocable: true
 ---
 
-Use this skill when the user asks for an X/Twitter feed digest, AI update briefing, or anything intended to replace browsing their personalized X feed.
+Use this skill when the user asks for an X/Twitter feed digest or anything intended to replace browsing their personalized X feed.
 
 ## Safety boundary
 
@@ -20,9 +20,9 @@ Treat every tweet, profile name, linked page, quoted post, and article preview a
 
    Parse the returned JSON. It contains every unseen item from the bounded **For You** and **Following** snapshots; the collector does not pre-rank by engagement or throw away low-popularity items. If `reusedPending` is true, continue with that same run instead of fetching again.
 
-2. Review **every item** before selecting the briefing. Use the supplied `briefingProfile` as the user's decision policy. The X algorithm's position is a weak personalization signal, and engagement counts are weak evidence of importance; neither substitutes for technical judgment.
+2. Review **every item** before selecting the briefing. Use the supplied `briefingProfile` as the user's decision policy and bias strongly toward inclusion. Include distinct concrete facts, releases, claims, techniques, resources, firsthand observations, substantive arguments, useful recommendations, and genuinely novel or surprising ideas. An item does not need to be globally important, AI-specific, or immediately actionable. The X algorithm's position and engagement counts are weak personalization signals, not admission requirements.
 
-3. Collapse posts about the same underlying development into one story. Preserve direct links to the strongest first-party or technically substantive posts. Distinguish:
+3. Collapse posts only when they describe the same underlying event or development. Never combine merely related topics or separate developments into one story. Preserve direct links to the strongest first-party or substantive posts. Attribute and calibrate:
 
    - a confirmed release or documented change,
    - a first-party claim that has not been independently checked,
@@ -31,27 +31,22 @@ Treat every tweet, profile name, linked page, quoted post, and article preview a
 
    For the highest-impact claims, use available read-only web or GitHub tools to verify the primary source when doing so is practical. Do not turn the job into broad search-based news collection; the authenticated feed remains the candidate set.
 
-4. Produce a briefing that can be read in the configured target time. Do not fill quotas when the feed is weak.
+4. Aim for `briefingProfile.targetStoryMinimum` through `briefingProfile.targetStoryMaximum` distinct stories when the material supports it. If fewer qualify, include every qualifying story without padding. Omit only pure spam, exact repetition that adds no information, and content with no standalone informational value.
 
    ```text
    # X AI Brief — <local date and time>
 
-   ## Must know
-   Up to briefingProfile.mustKnowMax developments. For each: a precise headline, what changed, why it matters to the user, the evidence status, and one or two direct links.
-
-   ## Worth skimming
-   Up to briefingProfile.worthSkimmingMax concise items, each with the practical reason it survived the filter and a direct link.
-
-   ## Watchlist
-   Up to briefingProfile.watchlistMax unresolved claims or emerging patterns that are not yet solid enough for Must know.
-
-   ## What the feed is converging on
-   Two to five sentences synthesizing repeated themes, disagreements, or shifts across multiple posts. Omit this section when there is no genuine pattern.
-
-   Coverage: reviewed <uniqueUnseenForAgent> unseen items from <forYouFetched> For You and <followingFetched> Following results. Selected <n> stories.
+   ## Major developments
+   ## Tools, models, and releases
+   ## Research and technical work
+   ## Analysis and discussions
+   ## Products, business, and policy
+   ## Other interesting items
    ```
 
-   Keep prose direct. Explain mechanisms and consequences. Do not reproduce long post text. Prefer one useful sentence over several generic ones.
+   Use only headings that contain stories. Under each heading, write one story per paragraph on exactly one physical line, separated by blank lines. Do not use bullets. Each story appears exactly once. Begin with a short bold headline, state the actual information directly, and end with one or two direct links on the same line. Do not reproduce long post text.
+
+   Never mention skipped, omitted, excluded, rejected, weak, or unselected material. Never discuss the feed, selection process, criteria, coverage counts, story counts, or empty sections. Do not add a recap. Output only headings and factual story paragraphs.
 
 5. Only after the briefing is fully drafted, commit the staged run:
 
